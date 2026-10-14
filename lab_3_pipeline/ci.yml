@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repo_add
+        uses: actions/checkout@v4
+      - name: py_setup
+        uses: actions/setup-python@v4
+        with:
+         python-version: '3.11'
+
+      - name: Függöségek telepítése
+        run: pip install -r requirements.txt
+
+      - name: Teszt futatása
+        run: pytest lab_3_pipeline -v
+      
+
+      
