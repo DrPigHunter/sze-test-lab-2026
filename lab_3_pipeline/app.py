@@ -13,8 +13,8 @@ def index():
     """
     Welcome endpoint.
     """
-    # MISTAKE 1
-    return jsonify({})
+    
+    return jsonify({"message":"Welcome"})
 
 @app.route('/todos' , methods=['GET', 'POST'])
 def handle_todos():
@@ -22,8 +22,7 @@ def handle_todos():
     Handles fetching all to-dos (GET) and creating a new to-do (POST).
     """
     if request.method == 'POST':
-        # MISTAKE 2
-        if not request.json or 'name' not in request.json:
+        if not request.json or 'task' not in request.json:
             return jsonify({"error": "Missing task data"}), 400
         
         new_todo = {
@@ -33,14 +32,15 @@ def handle_todos():
         }
         todos.append(new_todo)
         # MISTAKE 3
-        return jsonify(new_todo), 200
+        return jsonify(new_todo), 201
     
-    # MISTAKE 4
-    return todos
+    
+    
+    return jsonify(todos)
 
 
 # MISTAKE 5
-@app.route('/todos/<todo_id>', methods=['GET', 'PUT', 'DELETE'])
+@app.route('/todos/<int:todo_id>', methods=['GET', 'PUT', 'DELETE'])
 def handle_single_todo(todo_id):
     """
     Handles GET, PUT, and DELETE requests for a single to-do item by its ID.
@@ -52,7 +52,7 @@ def handle_single_todo(todo_id):
         
     if request.method == 'GET':
         # MISTAKE 6
-        return jsonify(todos), 200
+        return jsonify(todo), 200
 
     if request.method == 'PUT':
         if not request.json:
@@ -60,14 +60,14 @@ def handle_single_todo(todo_id):
         
         # MISTAKE 7
         todo['task'] = request.json.get('task', todo['task'])
-        todo['done'] = False
+        todo['done'] = request.json.get('done', todo['done'])
         return jsonify(todo), 200
 
     if request.method == 'DELETE':
         # MISTAKE 8
-        todos.pop(0)
+        todos.remove(todo)
         # MISTAKE 9
-        return jsonify({"message": "Deleted"}), 200
+        return '', 204
 
 
 def _get_next_id():
@@ -76,5 +76,4 @@ def _get_next_id():
     """
     if not todos:
         return 1
-    # MISTAKE 10
-    return max(item['id'] for item in todos)
+    return max(item['id'] for item in todos)+1
